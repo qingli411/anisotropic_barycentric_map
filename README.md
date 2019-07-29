@@ -10,5 +10,5 @@ Anisotropic barycentric map as a function of normalized depth. The closer a poin
 ![](anisotropicBarycentricMap.png)
 
 ### Figure 2: Direction of anisotropy
-Direction of anisotropy as a function of normalized depth. The direction of major axis (greatest eigenvalue) is marked by circles for cigar-like structure, whereas the direction of minor axis (smallest eigenvalue) is marked by crosses for pancake-like structure. The size of the markers is proportional to the degree of anisotropy. Black circle and cross in the upper right corner show the sizes corresponding to pure one-component and two-component turbulence.  The markers vanish as approaching three-component(isotropic) turbulence.
+Direction of anisotropy as a function of normalized depth. The direction of major axis (greatest eigenvalue) is marked by circles for cigar-like structure, whereas the direction of minor axis (smallest eigenvalue) is marked by crosses for pancake-like structure. The size of the markers is proportional to the degree of anisotropy. Black circle and cross in the upper right corner show the sizes corresponding to pure one-component and two-component turbulence.  The markers vanish as approaching three-component (isotropic) turbulence.
 ![](directionOfAnisotropy.png)
