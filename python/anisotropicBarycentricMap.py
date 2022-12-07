@@ -71,3 +71,49 @@ def plot_anisotropic_barycentric_map_base(ax):
     # set axis
     ax.axis('equal')
     ax.axis('off')
+
+def plot_vector_direction_base(ax):
+    # plot a circle
+    r = 1.
+    theta = np.deg2rad(np.linspace(0,360,361))
+    xcircle = r*np.cos(theta)
+    ycircle = r*np.sin(theta)
+    ax.plot(xcircle, ycircle, color='gray', linewidth=2)
+    # x-y angles
+    nr = 12
+    for i in np.arange(nr):
+        phi = np.pi*2/nr*i
+        xref = r*np.cos(phi)
+        yref = r*np.sin(phi)
+        ax.plot([0, xref], [0, yref], color='gray', linestyle='--', linewidth=1)
+        if i > 0 and i != nr/4:
+            di = i/nr*360
+            if di > 180:
+                di = di-360
+            rlabel = '{:3.0f}$^\circ$'.format(di)
+            xlb = 1.15*xref
+            ylb = 1.15*yref
+            ax.text(xlb, ylb, rlabel, color='gray', ha='center', va='center')
+    # z angle
+    nz = 5
+    for i in np.arange(nz):
+        ri = r/(nz+1)*(i+1)
+        xref = ri*np.cos(theta)
+        yref = ri*np.sin(theta)
+        ax.plot(xref, yref, color='gray', linestyle='--', linewidth=1)
+        zlabel = '{:2.0f}$^\circ$'.format(90*(1-ri/r))
+        xlb = -ri-0.1
+        ylb = -0.08
+        ax.text(xlb, ylb, zlabel, color='gray', fontsize=8)
+    # plot x-y axes
+    xx = 1.1
+    yy = 1.1
+    ax.arrow(0, 0, xx, 0, linewidth=2, head_width=0.04, color='k', zorder=3)
+    ax.arrow(0, 0, 0, yy, linewidth=2, head_width=0.04, color='k', zorder=3)
+    ax.text(xx, -0.1, '$x$', ha='center', va='center', fontsize=12)
+    ax.text(-0.1, yy, '$y$', ha='center', va='center', fontsize=12)
+    ax.text(0.06, 0.08, '$z$', ha='center', va='center', fontsize=12)
+
+    # set axis
+    ax.axis('equal')
+    ax.axis('off')
