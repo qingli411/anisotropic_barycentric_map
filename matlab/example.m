@@ -4,7 +4,7 @@
 % This is an example to visualize the anisotropy of Langmuir turbulence
 % as a function of normalized depth using the tools in this repository.
 % It reads in and plots the mean Reynolds stress (6 components)
-% from a large eddy simulation of Langmuir turbulence 
+% from a large eddy simulation of Langmuir turbulence
 % on an anisotropic barycentric map (figure 1) and the corresponding
 % direction of anisotropy map (figure 2). In this example, colorbar shows
 % the normalized depth. But if a timeseries of the Reynolds stress is
@@ -15,7 +15,7 @@
 close all; clear variables;
 
 % load data
-data = load('example_langmuir.mat');
+data = load('../data/example_langmuir.mat');
 uu = data.uu;
 vv = data.vv;
 ww = data.ww;
