@@ -1,19 +1,78 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-class ReynoldsStress(object):
+class AnisotropyTensor(object):
     """ ReynoldsStress object
     """
 
-    def init(self, uu, vv, ww, uv, uw, vw, ):
-        """Initialize Reynolds stress.
-
-        :arg1: TODO
-        :returns: TODO
+    def __init__(self, uu, vv, ww, uv, uw, vw, ):
+        """Initialize an anisotropy tensor object from the six components of Reynolds stress.
 
         """
-        pass
+        data = {}
+        data['uu'] = np.array(uu)
+        data['vv'] = np.array(vv)
+        data['ww'] = np.array(ww)
+        data['uv'] = np.array(uv)
+        data['uw'] = np.array(uw)
+        data['vw'] = np.array(vw)
+        self.size = data['uu'].size
+        for key in data.keys():
+            assert data[key].ndim <= 1, "Each component of the Reynolds stress should be a scalar or a 1D array."
+            assert data[key].size == self.size, "All components of the Reynolds stress should have the same size."
+        tke = 0.5*(data['uu']+data['vv']+data['ww'])
+        self.data = np.zeros([self.size, 3, 3])
+        self.data[:,0,0] = 0.5*data['uu']/tke - 1/3
+        self.data[:,1,1] = 0.5*data['vv']/tke - 1/3
+        self.data[:,2,2] = 0.5*data['ww']/tke - 1/3
+        self.data[:,0,1] = 0.5*data['uv']/tke
+        self.data[:,0,2] = 0.5*data['uw']/tke
+        self.data[:,1,2] = 0.5*data['vw']/tke
+        self.data[:,1,0] = 0.5*data['uv']/tke
+        self.data[:,2,0] = 0.5*data['uw']/tke
+        self.data[:,2,1] = 0.5*data['vw']/tke
 
+    def __repr__(self):
+        """Formatted print
+
+        """
+        summary = ['{}'.format(self.data[0,:,:])]
+        if self.size > 1:
+            summary.append('...')
+            summary.append('{}'.format(self.data[-1,:,:]))
+        return '\n'.join(summary)
+
+    def barycentric_coord(self):
+        """Get the coordinates in the barycentric map
+
+        See Banerjee et al., 2007
+
+        """
+        c = np.zeros([self.size, 3])
+        for i in np.arange(self.size):
+            a = self.data[i,:,:]
+            eigenvalues, _ = np.linalg.eig(a)
+            idx = eigenvalues.argsort()[::-1]
+            l = eigenvalues[idx]
+            c[i,0] = l[0]-l[1]
+            c[i,1] = 2*(l[1]-l[2])
+            c[i,2] = 3*l[2]+1
+        return c
+
+    def plot_anisotropic_barycentric_map(self, ax=None, **kwargs):
+        """Plot anisotropic barycentric map
+
+        """
+        if ax is None:
+            ax = plt.gca()
+        plot_anisotropic_barycentric_map_base(ax)
+        xc = np.array([0.5, -0.5, 0])
+        yc = np.array([0, 0, np.sqrt(3)*0.5])
+        c = self.barycentric_coord()
+        xx = np.dot(xc, c.transpose())
+        yy = np.dot(yc, c.transpose())
+        im = ax.scatter(xx, yy, zorder=3, **kwargs)
+        return im
 
 def plot_anisotropic_barycentric_map_base(ax):
     # plot a triangle
@@ -22,7 +81,6 @@ def plot_anisotropic_barycentric_map_base(ax):
     for i in np.arange(3):
         ip1 = (i+1)%3
         ax.plot([xc[i], xc[ip1]], [yc[i], yc[ip1]], 'k', linewidth=2)
-    ax.plot(xc, yc, 'k.')
     # add grid
     nsp = 5
     lc = np.abs(xc[1]-xc[0])
