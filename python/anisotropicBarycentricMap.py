@@ -59,6 +59,42 @@ class AnisotropyTensor(object):
             c[i,2] = 3*l[2]+1
         return c
 
+    def vector_direction_coord(self):
+        """ Get the coordinates in the vector direction map
+
+        See Li and Fox-Kemper, 2020
+
+        """
+        cmin = np.zeros([self.size, 3])
+        cmax = np.zeros([self.size, 3])
+        for i in np.arange(self.size):
+            a = self.data[i,:,:]
+            eigenvalues, eigenvectors = np.linalg.eig(a)
+            idx = eigenvalues.argsort()[::-1]
+            l = eigenvalues[idx]
+            v = eigenvectors[:,idx]
+            eta1 = l[0]-l[1]
+            eta2 = 2*(l[1]-l[2])
+            if eta1 >= eta2:
+                cmin[i,:] = np.nan
+                rv = np.sqrt(v[0,0]**2+v[1,0]**2)
+                phi = np.arctan2(v[2,0], rv)
+                theta = np.arctan2(v[1,0], v[0,0])
+                rr = 1-np.abs(phi/np.pi*2)
+                cmax[i,0] = rr*np.cos(theta)*np.sign(phi)
+                cmax[i,1] = rr*np.sin(theta)*np.sign(phi)
+                cmax[i,2] = eta1
+            else:
+                cmax[i,:] = np.nan
+                rv = np.sqrt(v[0,2]**2+v[1,2]**2)
+                phi = np.arctan2(v[2,2], rv)
+                theta = np.arctan2(v[1,2], v[0,2])
+                rr = 1-np.abs(phi/np.pi*2)
+                cmin[i,0] = rr*np.cos(theta)*np.sign(phi)
+                cmin[i,1] = rr*np.sin(theta)*np.sign(phi)
+                cmin[i,2] = eta2
+        return [cmax, cmin]
+
     def plot_anisotropic_barycentric_map(self, ax=None, **kwargs):
         """Plot anisotropic barycentric map
 
@@ -72,6 +108,24 @@ class AnisotropyTensor(object):
         xx = np.dot(xc, c.transpose())
         yy = np.dot(yc, c.transpose())
         im = ax.scatter(xx, yy, zorder=3, **kwargs)
+        return im
+
+    def plot_eigen_vector_direction_max_min(self, ax=None, c=None, cmap='rainbow'):
+        """Plot the direction of the eigen vectors corresponding to the maximum and minimum eigen values.
+
+        """
+        if ax is None:
+            ax = plt.gca()
+        plot_vector_direction_base(ax)
+        cmax, cmin = self.vector_direction_coord()
+        bsize = 200
+        cmap_colors = plt.cm.get_cmap(cmap)
+        frac = c/np.abs(c).max()
+        colors = cmap_colors(1+frac)
+        im = ax.scatter(cmin[:,0], cmin[:,1], s=cmin[:,2]*bsize, c=c, marker='x', cmap=cmap, zorder=3)
+        ax.scatter(cmax[:,0], cmax[:,1], s=cmax[:,2]*bsize, marker='o', edgecolors=colors, facecolors='none', linewidth=1.5, zorder=3)
+        ax.scatter(1, 1.1, s=bsize, marker='o', edgecolor='k', facecolor='none', linewidth=1.5)
+        ax.scatter(1, 0.9, s=bsize, c='k', marker='x')
         return im
 
 def plot_anisotropic_barycentric_map_base(ax):
