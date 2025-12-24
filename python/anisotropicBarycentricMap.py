@@ -101,7 +101,8 @@ class AnisotropyTensor(object):
         """
         if ax is None:
             ax = plt.gca()
-        plot_anisotropic_barycentric_map_base(ax)
+        if not ax.has_data():
+            plot_anisotropic_barycentric_map_base(ax)
         xc = np.array([0.5, -0.5, 0])
         yc = np.array([0, 0, np.sqrt(3)*0.5])
         c = self.barycentric_coord()
@@ -116,7 +117,8 @@ class AnisotropyTensor(object):
         """
         if ax is None:
             ax = plt.gca()
-        plot_vector_direction_base(ax)
+        if not ax.has_data():
+            plot_vector_direction_base(ax)
         cmax, cmin = self.vector_direction_coord()
         bsize = 200
         cmap_colors = plt.cm.get_cmap(cmap)
