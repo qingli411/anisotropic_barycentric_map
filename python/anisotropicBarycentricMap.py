@@ -95,7 +95,7 @@ class AnisotropyTensor(object):
                 cmin[i,2] = eta2
         return [cmax, cmin]
 
-    def plot_anisotropic_barycentric_map(self, ax=None, **kwargs):
+    def plot_anisotropic_barycentric_map(self, ax=None, plot_type='scatter', **kwargs):
         """Plot anisotropic barycentric map
 
         """
@@ -108,7 +108,12 @@ class AnisotropyTensor(object):
         c = self.barycentric_coord()
         xx = np.dot(xc, c.transpose())
         yy = np.dot(yc, c.transpose())
-        im = ax.scatter(xx, yy, zorder=3, **kwargs)
+        if plot_type == 'scatter':
+            im = ax.scatter(xx, yy, zorder=3, **kwargs)
+        elif plot_type == 'plot':
+            im = ax.plot(xx, yy, zorder=3, **kwargs)
+        else:
+            raise ValueError('Supported plot types: scatter or plot.')
         return im
 
     def plot_eigen_vector_direction_max_min(self, ax=None, c=None, cmap='rainbow'):
